@@ -1,0 +1,68 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+topology_template:
+  policies:
+    aria-service-proxy-plugin:
+      type: aria.Plugin
+      properties:
+        version: 0.1
+        
+data_types:
+  serviceproxy.waitconfig:
+    properties:
+      wait_for_service:
+        type: boolean
+        required: false
+        default: false
+      wait_time:
+        description: time to wait for service outputs to be available in seconds
+        type: integer
+        required: false
+        default: 30
+        
+node_types:
+
+  aria.serviceproxy.ServiceProxy:
+    derived_from: tosca.nodes.Root
+    properties:
+      aria_rest_url:
+        type: string
+        required: false
+        default: http://127.0.0.1:5000
+      aria_rest_version:
+        type: string
+        required: false
+        default: '0.1'
+      service_name:
+        description: the name of the service to proxy
+        required: true
+        type: string
+      outputs:
+        description: >-
+          list of outputs that will be mapped to proxy attributes
+          under the \"proxied\" key
+        required: false
+        default: []
+        type: list
+        entry_schema:
+          type: string
+      wait_config:
+        type: serviceproxy.waitconfig
+        required: false
+        default:
+          wait_for_service:
+            false
+    attributes:
+      last_update:
+        description: time of last update (unix epoch time)
+        type: timestamp
+      service_outputs:
+        description: outputs copied from proxied service
+        type: map
+        entry_schema:
+          type: string
+    interfaces:
+      Standard:
+        create:
+          implementation: aria-rest-proxy-plugin > aria_restservice_proxy.tasks.proxy_connect
+            
