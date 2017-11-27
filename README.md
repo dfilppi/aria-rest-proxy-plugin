@@ -1,4 +1,4 @@
-# ARIA Service Proxy Plugin
+# ARIA REST Service Proxy Plugin
 
 A plugin for inter-service coordination
 
